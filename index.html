@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AE 온보딩 프로파일 — 김뮬</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --primary: #534AB7; --primary-dark: #3730A3; --primary-light: #EAE8F7;
+    --primary-mid: #7B74CF; --text: #1A1A2E; --text-sub: #5A5A7A;
+    --text-muted: #9090AA; --border: #E0DEFA; --bg: #F8F7FF; --white: #FFFFFF;
+    --green: #2DB87A; --green-light: #E6F7F1; --amber: #F59E0B; --amber-light: #FEF3C7;
+  }
+  body { font-family: 'Noto Sans KR', sans-serif; background: #EDEDF5; color: var(--text); font-size: 13px; line-height: 1.6; }
+  .wrap { width: 880px; margin: 40px auto; background: var(--white); border-radius: 12px; overflow: hidden; box-shadow: 0 2px 16px rgba(83,74,183,0.08); }
+  .page-header { background: var(--primary); padding: 28px 36px 24px; display: flex; justify-content: space-between; align-items: flex-end; }
+  .doc-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; color: rgba(255,255,255,0.55); text-transform: uppercase; margin-bottom: 8px; }
+  .person-name { font-size: 26px; font-weight: 700; color: white; letter-spacing: -0.5px; margin-bottom: 4px; }
+  .person-meta { font-size: 13px; color: rgba(255,255,255,0.75); font-weight: 400; }
+  .page-header-right { text-align: right; }
+  .verdict-badge { display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; border-radius: 24px; background: rgba(255,255,255,0.15); border: 1.5px solid rgba(255,200,100,0.7); color: white; font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+  .verdict-dot { width: 7px; height: 7px; border-radius: 50%; background: #FFD966; }
+  .convert-date { font-size: 11px; color: rgba(255,255,255,0.65); }
+  .page-body { padding: 28px 36px; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .card { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 18px 20px; }
+  .card.full { grid-column: 1 / -1; }
+  .card.reason { background: var(--primary-light); border: 1.5px solid var(--primary); grid-column: 1 / -1; }
+  .card.reason .card-title { color: var(--primary); }
+  .card.next-role { background: #FFF0F5; border: 1.5px solid #E91E8C; grid-column: 1 / -1; }
+  .card.next-role .card-title { color: #AD1457; }
+  .card.next-role .exp-cat { color: #AD1457; }
+  .card.people-opinion { background: #F0FDF4; border: 1.5px solid #86EFAC; grid-column: 1 / -1; }
+  .card.people-opinion .card-title { color: #166534; }
+  .card-title { font-size: 10px; font-weight: 700; letter-spacing: 1px; color: var(--primary); text-transform: uppercase; margin-bottom: 14px; }
+  .overview-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .ov-label { font-size: 10px; color: var(--text-muted); margin-bottom: 3px; font-weight: 500; }
+  .ov-value { font-size: 13px; font-weight: 700; color: var(--text); }
+  .link-badges { display: flex; gap: 6px; margin-top: 5px; }
+  .link-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; text-decoration: none; background: var(--primary-light); color: var(--primary-dark); border: 1px solid var(--border); }
+  .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .stat-block { text-align: center; padding: 10px 4px; background: white; border: 1px solid var(--border); border-radius: 8px; }
+  .stat-num { font-size: 20px; font-weight: 700; color: var(--primary); line-height: 1.1; }
+  .stat-label { font-size: 10.5px; color: var(--text-sub); margin-top: 6px; font-weight: 600; }
+  .stat-sub { font-size: 9.5px; color: var(--text-muted); margin-top: 2px; }
+  .tag-group { margin-bottom: 12px; }
+  .tag-group:last-child { margin-bottom: 0; }
+  .tag-group-label { font-size: 10px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 5px; }
+  .tag { padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 500; }
+  .tag.green { background: var(--green-light); color: var(--green); }
+  .tag.amber { background: var(--amber-light); color: #92400E; }
+  .exp-list { list-style: none; }
+  .exp-list li { display: flex; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 12px; align-items: flex-start; }
+  .exp-list li:last-child { border-bottom: none; }
+  .exp-cat { flex-shrink: 0; width: 150px; font-weight: 700; color: var(--text-muted); font-size: 11px; padding-top: 1px; }
+  .exp-cat.pink { color: var(--primary); }
+  .exp-desc { color: var(--text-sub); line-height: 1.45; }
+  .exp-period { font-size: 10.5px; color: var(--text-muted); display: block; margin-top: 1px; font-weight: 400; }
+  .summary-box { background: var(--primary-light); border-left: 3px solid var(--primary); border-radius: 0 6px 6px 0; padding: 14px 16px; font-size: 12px; color: var(--text-sub); line-height: 1.65; }
+  .salary-row { display: flex; align-items: center; gap: 8px; font-size: 13px; flex-wrap: wrap; }
+  .salary-old { color: var(--text-muted); text-decoration: line-through; font-size: 12px; }
+  .salary-arrow { color: var(--primary); font-weight: 700; }
+  .salary-new { font-weight: 700; color: var(--text); }
+  .salary-up { font-size: 10.5px; font-weight: 700; color: var(--green); background: var(--green-light); padding: 2px 7px; border-radius: 10px; }
+  .people-section { margin-bottom: 14px; }
+  .people-section:last-child { margin-bottom: 0; }
+  .people-section-label { font-size: 10px; font-weight: 700; color: #166534; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 8px; }
+  .people-opinion-text { font-size: 12px; color: var(--text-sub); line-height: 1.6; background: white; border-radius: 6px; padding: 10px 14px; border: 1px solid #BBF7D0; }
+  .capacity-list { list-style: none; background: white; border-radius: 6px; border: 1px solid #BBF7D0; overflow: hidden; }
+  .capacity-list li { display: flex; gap: 10px; padding: 7px 12px; border-bottom: 1px solid #BBF7D0; font-size: 12px; align-items: flex-start; }
+  .capacity-list li:last-child { border-bottom: none; }
+  .cap-dot { width: 6px; height: 6px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+  .cap-dot.green { background: var(--green); }
+  .cap-dot.amber { background: var(--amber); }
+  .cap-desc { color: var(--text-sub); line-height: 1.45; }
+  @media print { .wrap { margin: 0; border-radius: 0; box-shadow: none; } body { background: white; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="page-header">
+    <div>
+      <div class="doc-label">AE 온보딩 프로파일 · 쇼츠비 프로젝트</div>
+      <div class="person-name">김뮬</div>
+      <div class="person-meta">콘텐츠커머스사업부 · 쇼츠비 프로젝트 AE · 2001년생</div>
+    </div>
+    <div class="page-header-right">
+      <div class="verdict-badge"><span class="verdict-dot"></span>입사 완료</div>
+      <div class="convert-date">입사일 2026.04.01</div>
+    </div>
+  </div>
+
+  <div class="page-body">
+
+    <!-- 지원자 개요 -->
+    <div class="card full">
+      <div class="card-title">구성원 개요</div>
+      <div class="overview-grid" style="grid-template-columns:repeat(3,1fr);">
+        <div>
+          <div class="ov-label">학력</div>
+          <div class="ov-value">성신여자대학교(4년제)</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">현대실용음악학과 · 2020.03~2025.08 졸업</div>
+        </div>
+        <div>
+          <div class="ov-label">입사일</div>
+          <div class="ov-value">2026.04.01</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">쇼츠비 프로젝트 AE</div>
+        </div>
+        <div>
+          <div class="ov-label">입사 전 경력</div>
+          <div class="ov-value">총 1년 4개월</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">콘텐츠·퍼포먼스 마케팅 인턴 2건 + 프리랜서</div>
+        </div>
+      </div>
+      <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border);">
+        <div class="ov-label" style="margin-bottom:6px;">첨부 자료</div>
+        <div class="link-badges">
+          <a class="link-badge" href="https://drive.google.com/file/d/1rcm2pBKBDe37fnqD2jo2FfK_gOn48sfr/view?usp=sharing" target="_blank">📄 이력서</a>
+          <a class="link-badge" href="https://drive.google.com/file/d/1d19IdEaUQkWhaU9yOZg2CqioQaWbyrDX/view?usp=sharing" target="_blank">📁 포트폴리오</a>
+          <a class="link-badge" href="https://shink-coder.github.io/mulreport/" target="_blank">🔗 쇼츠비 업무 현황 리포트</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 강점 · 특이사항 -->
+    <div class="card full">
+      <div class="card-title">강점 · 특이사항</div>
+      <div class="tag-group">
+        <div class="tag-group-label">강점 (경력·포트폴리오 근거)</div>
+        <div class="tags">
+          <span class="tag green">콘텐츠 기획·촬영·편집 전 과정 수행</span>
+          <span class="tag green">메타 광고 소재 기획·제작</span>
+          <span class="tag green">AI 툴 활용 영상 재편집·제작</span>
+          <span class="tag green">데이터 기반 인사이트 도출 및 개선</span>
+          <span class="tag green">랜딩페이지 기획·제작</span>
+          <span class="tag green">SNS/블로그 채널 운영</span>
+          <span class="tag green">커뮤니케이션·팀 협업</span>
+        </div>
+      </div>
+      <div class="tag-group">
+        <div class="tag-group-label">특이사항</div>
+        <div class="tags">
+          <span class="tag amber">마케팅 비전공 (현대실용음악학과)</span>
+          <span class="tag amber">대형 브랜드/대규모 캠페인 단독 수행 경험 상대적으로 적음</span>
+          <span class="tag amber">본인 인지 보완점: "강제성 없으면 느슨해질 수 있어 스스로 루틴 설정으로 관리"</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 리더 평가 -->
+    <div class="card people-opinion">
+      <div class="card-title">리더 평가</div>
+
+      <div class="people-section">
+        <div class="people-section-label">현재 업무 역량</div>
+        <ul class="capacity-list">
+          <li><span class="cap-dot green"></span><span class="cap-desc">신입이지만 숏폼 영상 기획 파트 PM 역할을 수행 중 — 아이디어 기획부터 제작·편집까지 담당하는 숏폼 PD 역할</span></li>
+          <li><span class="cap-dot green"></span><span class="cap-desc">삼성전자 등을 포함해 다수의 숏폼 브랜드 콘텐츠를 제작 중이며, 실제 우수 콘텐츠 산출로 이어지고 있음</span></li>
+          <li><span class="cap-dot green"></span><span class="cap-desc">각 사업부와의 소통·커뮤니케이션이 원활함</span></li>
+        </ul>
+      </div>
+
+      <div class="people-section">
+        <div class="people-section-label">향후 기대</div>
+        <div class="people-opinion-text">
+          쇼츠비 사이트 런칭 이후에도 플랫폼 자체를 홍보하는 브랜딩 콘텐츠 및 바이럴 홍보 작업이 다수 필요할 것으로 예상되어, 해당 영역의 기획 PM 역할을 기대함.
+        </div>
+      </div>
+
+      <div class="people-section">
+        <div class="people-section-label">협업 · 적응 특이사항</div>
+        <ul class="capacity-list">
+          <li><span class="cap-dot amber"></span><span class="cap-desc">계획형(J) 성격으로 급하게 들어오는 광고주 요청에 다소 스트레스를 받는 편</span></li>
+          <li><span class="cap-dot green"></span><span class="cap-desc">그럼에도 책임감을 갖고 최대한 조율해서 수행하려는 태도를 보이는 인력</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 현재 진행중인 업무 -->
+    <div class="card full people-opinion">
+      <div class="card-title">현재 진행중인 업무</div>
+      <p style="font-size:12px;color:var(--text-sub);line-height:1.7;margin-bottom:10px;">
+        쇼츠비 프로젝트의 PM 및 기획·제작 업무를 총괄하고 있으며,<br>
+        파워미디어 채널 소싱·취합부터 업로드 일정 관리, 콘텐츠 성과 트래킹까지 전반을 담당
+      </p>
+      <ul style="padding-left:18px;list-style:disc;font-size:12px;color:var(--text-sub);line-height:1.7;margin-bottom:12px;">
+        <li>조회수 상위 릴스 하나은행 117만, 삼성전자 65만</li>
+      </ul>
+      <div class="link-badges">
+        <a class="link-badge" href="https://shink-coder.github.io/mulreport/" target="_blank">🔗 쇼츠비 업무 현황 리포트</a>
+      </div>
+    </div>
+
+    <!-- 주요 경력사항 -->
+    <div class="card full">
+      <div class="card-title">주요 경력사항</div>
+      <ul class="exp-list">
+        <li><span class="exp-cat pink">더에스엠씨 쇼츠비<span class="exp-period">2026.04.01~재직중 (AE)</span></span><span class="exp-desc">현재 소속 · 쇼츠비 프로젝트 AE로 입사</span></li>
+        <li><span class="exp-cat pink">오시브스튜디오<span class="exp-period">2025.11~2026.03, 5개월 (프리랜서, 퇴사)</span></span><span class="exp-desc">매거진 계정(@osibmag) 피드 톤앤매너 설계·카드뉴스 기획, 브랜드 계정(@osib.studio) 숏폼 영상·캠페인 콘텐츠 기획·제작</span></li>
+        <li><span class="exp-cat pink">㈜365mc 줄기세포미래전략팀<span class="exp-period">2025.11~2026.02, 4개월 (콘텐츠마케팅 인턴)</span></span><span class="exp-desc">메타 광고 소재 기획·제작(CPA 8천원~1만원 초반, 목표 대비 40~50% 절감), 브랜드 영상 콘텐츠 기획·촬영·편집, 주 2건 블로그 콘텐츠 운영</span></li>
+        <li><span class="exp-cat pink">넷매니아 신규사업팀<span class="exp-period">2025.07~09, 3개월 (콘텐츠마케팅 인턴)</span></span><span class="exp-desc">AI 음원 서비스 광고 캠페인 기획·제작·집행 주도, 랜딩페이지 기획 및 데모 제작 독립 수행, CTR 1%→3% 개선</span></li>
+        <li><span class="exp-cat pink">㈜에이비씨마트코리아<span class="exp-period">2024.07~2025.03, 9개월 (판매직)</span></span><span class="exp-desc">재고 관리 및 판매, 매장 운영 (리테일 현장 경험)</span></li>
+      </ul>
+    </div>
+
+    <!-- 입사 전 기타 경험 -->
+    <div class="card full">
+      <div class="card-title">기타 경험 · 대외활동</div>
+      <ul class="exp-list">
+        <li><span class="exp-cat">익산청년예술기자단<span class="exp-period">2024.10~11</span></span><span class="exp-desc">유튜브팀 — 콘텐츠 기획·자료조사·촬영·편집·업로드 전 과정 수행, 월 숏폼·롱폼 각 1편 제작, 우수 서포터즈 선정</span></li>
+        <li><span class="exp-cat">뷰티풀라이프(A&R 실무교육)<span class="exp-period">2022.03~05</span></span><span class="exp-desc">엔터테인먼트사 A&R 부서 실무 학습, 앨범 기획·마케팅 전략 프로젝트, 최종 발표 최고 평가 수령</span></li>
+        <li><span class="exp-cat">유니엠 20기(동아리)<span class="exp-period">2022.06~12</span></span><span class="exp-desc">연극 프로젝트 — 팀원 7인 협업, 공연 〈오, 당신이 잠든 사이에〉 기획·완수</span></li>
+        <li><span class="exp-cat">인강 촬영 PD<span class="exp-period">약 9개월, 2022.05~2023.01</span></span><span class="exp-desc">카메라·마이크 세팅, 촬영 진행 및 편집 보고서 작성</span></li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>
